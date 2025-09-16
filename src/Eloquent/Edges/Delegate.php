@@ -1,7 +1,8 @@
 <?php
 
 namespace Vinelab\NeoEloquent\Eloquent\Edges;
-
+use Ds\Map;
+use Ds\Vector;
 use Laudis\Neo4j\Types\CypherList;
 use Laudis\Neo4j\Types\CypherMap;
 use Laudis\Neo4j\Types\Node;
@@ -256,7 +257,11 @@ abstract class Delegate
             unset($properties['id']);
         }
 
-        return new Node($id, new CypherList([$label]), new CypherMap($properties));
+        return new Node(
+            $id,
+            new CypherList(new Vector([$label])),     // labels phải wrap bằng Vector
+            new CypherMap(new Map($properties))       // properties phải wrap bằng Map
+        );
     }
 
     /**

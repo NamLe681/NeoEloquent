@@ -69,7 +69,7 @@ trait ResultTrait
 
         /** @var Node $node */
         foreach ($nodes as $node) {
-            if($id === $node->getId()) {
+            if($id === $node->id()) {
                 return $node;
             }
         }

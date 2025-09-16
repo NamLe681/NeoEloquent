@@ -351,8 +351,20 @@ class Builder
         $results = $this->connection->insert($cypher, $bindings);
 
         /** @var Node $node */
-        $node = $results->first()->first()->getValue();
-        return $node->getId();
+        if ($results->isEmpty()) {
+            return null; 
+        }
+
+        $firstRow = $results->first();
+
+        if ($firstRow->isEmpty()) {
+            return null;
+        }
+
+        $pair = $firstRow->first();
+        $node = $pair->value;
+
+        return $node->id();
     }
 
     /**

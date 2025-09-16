@@ -688,7 +688,7 @@ class Builder
 
         foreach ($resultsByIdentifier as $identifier => $nodes) {
             foreach ($nodes as $node) {
-                if ($node->getId() === $relationship->$method()) {
+                if ($node->id() === $relationship->$method()) {
                     return $identifier;
                 }
             }
@@ -712,11 +712,12 @@ class Builder
         }
 
         // get the attributes ready
-        $attributes = array_merge($node->getProperties()->toArray(), $model->getAttributes());
+        $attributes = array_merge($node->properties()->toArray(), $model->getAttributes());
+
 
         // we will check to see whether we should use Neo4j's built-in ID.
         if ($model->getKeyName() === 'id') {
-            $attributes['id'] = $node->getId();
+            $attributes['id'] = $node->id();
         }
 
         // This is a regular record that we should deal with the normal way, creating an instance

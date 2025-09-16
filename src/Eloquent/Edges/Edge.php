@@ -1,7 +1,6 @@
 <?php
 
 namespace Vinelab\NeoEloquent\Eloquent\Edges;
-
 use DateTime;
 use Carbon\Carbon;
 use GraphAware\Neo4j\Client\Formatter\Result;
@@ -245,13 +244,15 @@ abstract class Edge extends Delegate
      * @param Model $end
      * @param array $properties
      */
-    public function saveRelationship($type, $start, $end, $properties): CypherMap
+    public function saveRelationship($type, $start, $end, $properties): ?CypherMap
     {
         $grammar = $this->query->getQuery()->getGrammar();
         $attributes = $this->getRelationshipAttributes($start, $end, $properties);
         $query = $grammar->compileCreateRelationship($this->query->getQuery(), $attributes);
 
-        return $this->connection->statement($query, [], true)->first();
+        $result = $this->connection->statement($query, [], true);
+
+        return $result->isEmpty() ? null : $result->first();
     }
 
     /**
@@ -357,9 +358,12 @@ abstract class Edge extends Delegate
         $this->end = $this->getNodeByType($relation, $nodes, 'end');
 
         $relatedNode = ($this->isDirectionOut()) ? $this->end : $this->start;
-        $attributes = array_merge(['id' => $relatedNode->getId()], $relatedNode->getProperties()->toArray());
+        $attributes = array_merge(
+        ['id' => $relatedNode->id()],
+        $relatedNode->properties()->toArray()  
+        );
 
-        $this->related = $this->related->newFromBuilder($attributes);
+        $this->related = $this->related->newFromBuilder($attributes);   
         $this->related->setConnection($this->related->getConnectionName());
 
 //        $this->start = $relation->getStartNode();
